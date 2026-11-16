@@ -767,15 +767,19 @@ function drawGround() {
 		ctx.closePath(); ctx.fill();
 		ctx.restore();
 	}
-	/* tree shadow by day */
+	/* soft shade right at the roots by day: small, fading to nothing, no hard oval edge */
 	const sunA = 1 - dayNight;
 	if (sunA > 0.05) {
+		const shR = 15 * treeScale * (0.35 + 0.65 * ageG());
+		const shY = treeBase + 2 * treeScale;
 		ctx.save();
-		ctx.globalAlpha = 0.15 * sunA;
-		ctx.fillStyle = '#0a2010';
-		ctx.beginPath();
-		ctx.ellipse(treeCX + 44 * (0.2 + 0.8 * ageG()), treeBase + 6, 120 * treeScale / 2.4 * (0.15 + 0.85 * ageG()), 11 * (0.4 + 0.6 * ageG()), 0.05, 0, 7);
-		ctx.fill();
+		ctx.translate(treeCX, shY);
+		ctx.scale(1, 0.3);
+		const gsh = ctx.createRadialGradient(0, 0, 0, 0, 0, shR);
+		gsh.addColorStop(0, 'rgba(10,32,16,' + (0.16 * sunA) + ')');
+		gsh.addColorStop(1, 'rgba(10,32,16,0)');
+		ctx.fillStyle = gsh;
+		ctx.beginPath(); ctx.arc(0, 0, shR, 0, 6.2832); ctx.fill();
 		ctx.restore();
 	}
 }
@@ -1033,13 +1037,6 @@ function drawTree() {
 			}
 			ctx.stroke();
 		}
-		/* snow on roots and at the base */
-		ctx.fillStyle = dayNight > 0.5 ? 'rgba(206,216,234,0.9)' : 'rgba(244,249,252,0.92)';
-		ctx.globalAlpha = Math.min(1, snowAmount * 1.3);
-		ctx.beginPath();
-		ctx.ellipse(treeCX, treeBase + 0.5 * treeScale, 17 * treeScale * (0.35 + 0.65 * ageG()), 1.6 * treeScale * (0.35 + 0.65 * ageG()), 0, 0, 6.2832);
-		ctx.fill();
-		ctx.globalAlpha = 1;
 	}
 }
 
